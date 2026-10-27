@@ -239,7 +239,7 @@ public class Plant : MonoBehaviour
         // l'aspiration n'est que du spectacle.
         if (scoreManager != null) // Null check : plante posée à la main dans la scène, sans planteur
         {
-            scoreManager.AddPoints(harvestPoints);
+            scoreManager.RecordHarvest(displayName, harvestPoints);
         }
 
         // Arrêter la croissance (sinon la plante pourrait encore changer d'étape ou éclater),

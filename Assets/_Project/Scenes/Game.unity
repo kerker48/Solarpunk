@@ -265,8 +265,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 320, y: -50}
-  m_SizeDelta: {x: 600, y: 80}
+  m_AnchoredPosition: {x: 312, y: -140}
+  m_SizeDelta: {x: 600, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &153452272
 MonoBehaviour:
@@ -288,7 +288,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Bl\xE9 r\xE9colt\xE9 : 0"
+  m_text: "Score : 5 \r\nBl\xE9 : 3 \nCarotte : 1"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -315,8 +315,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48
-  m_fontSizeBase: 48
+  m_fontSize: 44
+  m_fontSizeBase: 44
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5601,7 +5601,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6670fcbf4a88831479eae5c753cd2774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoilPlot
-  maxPlants: 4
 --- !u!65 &906616886
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5727,7 +5726,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6670fcbf4a88831479eae5c753cd2774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoilPlot
-  maxPlants: 4
 --- !u!65 &981082411
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5856,6 +5854,20 @@ Transform:
   - {fileID: 2019905075}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1129040879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: Player/PreviousPlant
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_ActionId: cc28916d-614c-4913-bdf3-77260ac79334
 --- !u!114 &1149443182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5949,6 +5961,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1266926604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: Player/NextPlant
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_ActionId: 84e9cd3b-e81f-4ae1-a80d-430485a5d328
 --- !u!1 &1297456670
 GameObject:
   m_ObjectHideFlags: 0
@@ -5996,7 +6022,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6670fcbf4a88831479eae5c753cd2774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoilPlot
-  maxPlants: 4
 --- !u!65 &1297456673
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6088,6 +6113,7 @@ GameObject:
   - component: {fileID: 1450078706}
   - component: {fileID: 1450078707}
   - component: {fileID: 1450078708}
+  - component: {fileID: 1450078709}
   m_Layer: 0
   m_Name: Drone
   m_TagString: Untagged
@@ -6104,7 +6130,7 @@ Transform:
   m_GameObject: {fileID: 1450078703}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 4.24, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6148,8 +6174,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SeedPlanter
   plantAction: {fileID: 1652638158}
+  plantSelector: {fileID: 1450078709}
   plantPrefab: {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
-  minSpacing: 1.2
   rayLength: 20
   scoreManager: {fileID: 1921327919}
   plantsParent: {fileID: 2019905075}
@@ -6196,6 +6222,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1450078709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450078703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0973a40faafb69b459c4ebc271c01c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlantSelector
+  nextAction: {fileID: 1266926604}
+  previousAction: {fileID: 1129040879}
+  plantTypes:
+  - {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
+  - {fileID: 2695993089296999206, guid: 02f21a14c7bceb14eac1853b37629b7b, type: 3}
 --- !u!1 &1479967401
 GameObject:
   m_ObjectHideFlags: 0
@@ -6332,7 +6375,8 @@ GameObject:
   - component: {fileID: 1888990828}
   - component: {fileID: 1888990827}
   - component: {fileID: 1888990826}
-  - component: {fileID: 1888990830}
+  - component: {fileID: 1888990831}
+  - component: {fileID: 1888990832}
   m_Layer: 5
   m_Name: HUD
   m_TagString: Untagged
@@ -6416,6 +6460,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 153452271}
+  - {fileID: 1893688504}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -6423,7 +6468,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1888990830
+--- !u!114 &1888990831
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6432,12 +6477,168 @@ MonoBehaviour:
   m_GameObject: {fileID: 1888990825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ca900cf01eed2d40897575fb41e99cf, type: 3}
+  m_Script: {fileID: 11500000, guid: dc5ad0638aa4cf0408d75c67a7a5aeef, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ScoreUI
+  m_EditorClassIdentifier: Assembly-CSharp::PlantSelectorUI
+  plantSelector: {fileID: 1450078709}
+  nameText: {fileID: 1893688502}
+  iconImage: {fileID: 0}
+  format: "\xAB  {0}  \xBB\n<size=60%>{1} pt \xB7 {2}/{3}</size>"
+--- !u!114 &1888990832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888990825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f983ffe4b042d4db0d7d47c391f01c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HarvestUI
   scoreManager: {fileID: 1921327919}
-  scoreText: {fileID: 153452272}
-  format: "Bl\xE9 r\xE9colt\xE9 : {0}"
+  plantSelector: {fileID: 1450078709}
+  harvestText: {fileID: 153452272}
+  showTotalScore: 1
+  totalFormat: '<b>Score : {0}</b>'
+  lineFormat: '<size=75%>{0} : {1}</size>'
+--- !u!1 &1893688501
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1893688504}
+  - component: {fileID: 1893688503}
+  - component: {fileID: 1893688502}
+  m_Layer: 5
+  m_Name: GraineText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1893688502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893688501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: "Bl\xE9\nAppuie sur E"
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 44
+  m_fontSizeBase: 44
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 1
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1893688503
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893688501}
+  m_CullTransparentMesh: 1
+--- !u!224 &1893688504
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893688501}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1888990829}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: -8}
+  m_SizeDelta: {x: 600, y: 120}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &1921327918
 GameObject:
   m_ObjectHideFlags: 0
@@ -6719,7 +6920,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6670fcbf4a88831479eae5c753cd2774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoilPlot
-  maxPlants: 4
 --- !u!65 &2088467515
 BoxCollider:
   m_ObjectHideFlags: 0

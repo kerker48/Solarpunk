@@ -32,6 +32,13 @@ public class PlantSelector : MonoBehaviour
     /// <summary>Nombre de plantes disponibles.</summary>
     public int Count => plantTypes != null ? plantTypes.Length : 0;
 
+    /// <summary>Renvoie la plante à cette position de la liste (null si l'index est invalide).</summary>
+    public Plant GetPlant(int index)
+    {
+        if (plantTypes == null || index < 0 || index >= plantTypes.Length) return null;
+        return plantTypes[index];
+    }
+
     /// <summary>Déclenché à chaque changement de sélection (l'interface s'y abonne).</summary>
     public event Action<Plant> SelectionChanged;
 
