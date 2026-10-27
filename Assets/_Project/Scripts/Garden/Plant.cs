@@ -52,6 +52,17 @@ public class Plant : MonoBehaviour
     [Tooltip("Taille juste avant l'éclatement.")]
     [SerializeField] private float overripeScale = 1.3f;
 
+    [Header("Récolte")]
+    [Tooltip("Points gagnés quand on récolte ce légume mûr.")]
+    [SerializeField, Min(1)] private int harvestPoints = 1;
+
+    [Header("Aspiration à la récolte")]
+    [Tooltip("Durée de l'aspiration du légume vers le drone (en secondes).")]
+    [SerializeField, Min(0.05f)] private float suctionDuration = 0.6f;
+
+    [Tooltip("Vitesse de rotation du légume pendant qu'il est aspiré (degrés par seconde).")]
+    [SerializeField] private float suctionSpinSpeed = 720f;
+
     [Header("Arrosage")]
     [Tooltip("Bonus de croissance quand la plante est arrosée (2 = pousse 2× plus vite).")]
     [SerializeField, Min(1f)] private float wateredGrowthMultiplier = 2.5f;
@@ -67,6 +78,22 @@ public class Plant : MonoBehaviour
 
     /// <summary>Vrai tant que la plante profite encore d'un arrosage récent.</summary>
     public bool IsWet => Time.time < wetUntil;
+
+    // Qui tient le score ? La plante est créée PENDANT la partie : elle ne peut pas avoir
+    // cette référence glissée dans l'Inspector. C'est le planteur qui la lui donne à sa naissance
+    // (injection de dépendance, voir Initialize).
+    private ScoreManager scoreManager;
+
+    // Empêche une double récolte si plusieurs détections arrivent dans la même image.
+    private bool isHarvested;
+
+    /// <summary>
+    /// Appelée par SeedPlanter juste après Instantiate : on « injecte » le ScoreManager.
+    /// </summary>
+    public void Initialize(ScoreManager scoreManager)
+    {
+        this.scoreManager = scoreManager;
+    }
 
     // Moment (en secondes de jeu) jusqu'auquel la plante reste arrosée.
     private float wetUntil = -1f;
@@ -126,6 +153,64 @@ public class Plant : MonoBehaviour
         if (seedVisual != null) seedVisual.SetActive(newStage == GrowthStage.Seed);
         if (ripeVisual != null) ripeVisual.SetActive(newStage == GrowthStage.Ripe);
         if (overripeVisual != null) overripeVisual.SetActive(newStage == GrowthStage.Overripe);
+    }
+
+    // OnTriggerStay (et pas seulement Enter) : si le drone est DÉJÀ au-dessus quand le blé
+    // devient mûr, il est récolté quand même. On ne garde aucune référence vers le drone
+    // en dehors de la récolte : aucune erreur si la plante éclate pendant le survol.
+    private void OnTriggerStay(Collider other)
+    {
+        if (isHarvested || !IsRipe) return;                     // seul un légume mûr se récolte
+        DroneController drone = other.GetComponentInParent<DroneController>();
+        if (drone == null) return;                              // ce n'est pas le drone
+        Harvest(drone.transform);
+    }
+
+    private void Harvest(Transform drone)
+    {
+        isHarvested = true;
+
+        // Les points sont donnés TOUT DE SUITE : le score monte sans délai (brique 3.2),
+        // l'aspiration n'est que du spectacle.
+        if (scoreManager != null) // Null check : plante posée à la main dans la scène, sans planteur
+        {
+            scoreManager.AddPoints(harvestPoints);
+        }
+
+        // Arrêter la croissance (sinon la plante pourrait encore changer d'étape ou éclater),
+        // puis lancer l'aspiration.
+        StopAllCoroutines();
+        StartCoroutine(SuckIntoDrone(drone));
+    }
+
+    /// <summary>
+    /// Le légume monte vers le drone en tournant et en rétrécissant, puis disparaît.
+    /// </summary>
+    private IEnumerator SuckIntoDrone(Transform drone)
+    {
+        Vector3 startPosition = transform.position;
+        Vector3 startScale = transform.localScale;
+        float elapsed = 0f;
+
+        while (elapsed < suctionDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / suctionDuration);
+            float eased = t * t; // démarre doucement puis accélère : effet « aspiré »
+
+            // Le drone peut bouger pendant l'aspiration : on vise sa position actuelle.
+            // S'il n'existe plus (Null check), on vise simplement vers le haut.
+            Vector3 target = drone != null ? drone.position : startPosition + Vector3.up * 5f;
+
+            transform.position = Vector3.Lerp(startPosition, target, eased);
+            transform.localScale = Vector3.Lerp(startScale, Vector3.zero, eased);
+            transform.Rotate(0f, suctionSpinSpeed * Time.deltaTime, 0f, Space.World);
+
+            yield return null;
+        }
+
+        // Plus tard (jalon 4) : son + particules de récolte ici.
+        Destroy(gameObject); // disparaît de la scène ET de la Hierarchy
     }
 
     private void Burst()

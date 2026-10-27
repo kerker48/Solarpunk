@@ -5464,6 +5464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6670fcbf4a88831479eae5c753cd2774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoilPlot
+  maxPlants: 4
 --- !u!65 &906616886
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5589,6 +5590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6670fcbf4a88831479eae5c753cd2774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoilPlot
+  maxPlants: 4
 --- !u!65 &981082411
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5778,6 +5780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6670fcbf4a88831479eae5c753cd2774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoilPlot
+  maxPlants: 4
 --- !u!65 &1297456673
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5868,6 +5871,7 @@ GameObject:
   - component: {fileID: 1450078705}
   - component: {fileID: 1450078706}
   - component: {fileID: 1450078707}
+  - component: {fileID: 1450078708}
   m_Layer: 0
   m_Name: Drone
   m_TagString: Untagged
@@ -5931,6 +5935,7 @@ MonoBehaviour:
   plantPrefab: {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
   minSpacing: 1.2
   rayLength: 20
+  scoreManager: {fileID: 1921327919}
   plantsParent: {fileID: 2019905075}
 --- !u!114 &1450078707
 MonoBehaviour:
@@ -5948,6 +5953,33 @@ MonoBehaviour:
   waterParticles: {fileID: 197213703}
   waterRadius: 1
   waterDepth: 12
+--- !u!54 &1450078708
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450078703}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1479967401
 GameObject:
   m_ObjectHideFlags: 0
@@ -6072,6 +6104,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
   m_Asset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_ActionId: 7a94d20a-676a-48b7-bbca-e2353a11d4ed
+--- !u!1 &1921327918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1921327920}
+  - component: {fileID: 1921327919}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1921327919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921327918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f97b0e5b165eb634a968e698820ce5b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
+--- !u!4 &1921327920
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921327918}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.85705, y: -0, z: 4.86998}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1961484059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6309,6 +6385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6670fcbf4a88831479eae5c753cd2774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoilPlot
+  maxPlants: 4
 --- !u!65 &2088467515
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6397,3 +6474,4 @@ SceneRoots:
   - {fileID: 1967720193}
   - {fileID: 1450078704}
   - {fileID: 1025666291}
+  - {fileID: 1921327920}

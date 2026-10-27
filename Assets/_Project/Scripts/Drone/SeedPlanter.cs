@@ -23,6 +23,9 @@ public class SeedPlanter : MonoBehaviour
     [Tooltip("Longueur du rayon lancé vers le bas pour trouver le sol.")]
     [SerializeField] private float rayLength = 20f;
 
+    [Tooltip("Le ScoreManager de la scène : il sera transmis à chaque plante à sa naissance.")]
+    [SerializeField] private ScoreManager scoreManager;
+
     [Tooltip("Objet de la Hierarchy qui servira de parent aux plantes (pour garder la Hierarchy rangée). Optionnel.")]
     [SerializeField] private Transform plantsParent;
 
@@ -66,10 +69,15 @@ public class SeedPlanter : MonoBehaviour
             return; // rien sous le drone
         }
 
-        // 2. Le sol touché est-il une parcelle de terre ?
-        if (hit.collider.GetComponentInParent<SoilPlot>() == null)
+        // 2. Le sol touché est-il une parcelle de terre, et reste-t-il de la place dessus ?
+        SoilPlot plot = hit.collider.GetComponentInParent<SoilPlot>();
+        if (plot == null)
         {
             return; // herbe, chemin… on ne plante pas ici
+        }
+        if (!plot.HasRoom)
+        {
+            return; // parcelle pleine
         }
 
         // 3. Y a-t-il assez de place ? On retire d'abord de la liste les plantes
@@ -87,7 +95,9 @@ public class SeedPlanter : MonoBehaviour
 
         // 4. Faire naître la plante et la mémoriser.
         Plant newPlant = Instantiate(plantPrefab, hit.point, Quaternion.identity, plantsParent);
+        newPlant.Initialize(scoreManager); // injection de dépendance : la plante sait à qui donner ses points
         plantedPlants.Add(newPlant);
+        plot.Register(newPlant);
     }
 
     // Affiche le rayon de plantation dans la vue Scene quand le drone est sélectionné.
