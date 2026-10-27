@@ -14,11 +14,11 @@ public class SeedPlanter : MonoBehaviour
     [SerializeField] private InputActionReference plantAction;
 
     [Header("Plantation")]
-    [Tooltip("Prefab de la plante à faire apparaître.")]
-    [SerializeField] private Plant plantPrefab;
+    [Tooltip("Sélecteur de plante : décide QUELLE plante planter. S'il est vide, on utilise Plant Prefab.")]
+    [SerializeField] private PlantSelector plantSelector;
 
-    [Tooltip("Distance minimale entre deux plantes (en unités).")]
-    [SerializeField] private float minSpacing = 1.2f;
+    [Tooltip("Prefab utilisé si aucun sélecteur n'est assigné.")]
+    [SerializeField] private Plant plantPrefab;
 
     [Tooltip("Longueur du rayon lancé vers le bas pour trouver le sol.")]
     [SerializeField] private float rayLength = 20f;
@@ -54,9 +54,14 @@ public class SeedPlanter : MonoBehaviour
 
     private void TryPlant()
     {
-        if (plantPrefab == null)
+        // Quelle plante ? Celle choisie dans le sélecteur, sinon le Prefab par défaut.
+        Plant prefabToPlant = plantSelector != null && plantSelector.CurrentPlant != null
+            ? plantSelector.CurrentPlant
+            : plantPrefab;
+
+        if (prefabToPlant == null)
         {
-            Debug.LogWarning("SeedPlanter : aucun Prefab de plante assigné dans l'Inspector.");
+            Debug.LogWarning("SeedPlanter : aucune plante à planter (sélecteur et Plant Prefab vides).");
             return;
         }
 
@@ -75,9 +80,9 @@ public class SeedPlanter : MonoBehaviour
         {
             return; // herbe, chemin… on ne plante pas ici
         }
-        if (!plot.HasRoom)
+        if (!plot.HasRoomFor(prefabToPlant))
         {
-            return; // parcelle pleine
+            return; // parcelle pleine pour ce type de plante (maximum défini sur la plante)
         }
 
         // 3. Y a-t-il assez de place ? On retire d'abord de la liste les plantes
@@ -87,14 +92,14 @@ public class SeedPlanter : MonoBehaviour
         {
             Vector3 offset = plant.transform.position - hit.point;
             offset.y = 0f; // on compare seulement à l'horizontale
-            if (offset.magnitude < minSpacing)
+            if (offset.magnitude < prefabToPlant.MinSpacing)
             {
                 return; // trop près d'une autre plante
             }
         }
 
         // 4. Faire naître la plante et la mémoriser.
-        Plant newPlant = Instantiate(plantPrefab, hit.point, Quaternion.identity, plantsParent);
+        Plant newPlant = Instantiate(prefabToPlant, hit.point, Quaternion.identity, plantsParent);
         newPlant.Initialize(scoreManager); // injection de dépendance : la plante sait à qui donner ses points
         plantedPlants.Add(newPlant);
         plot.Register(newPlant);

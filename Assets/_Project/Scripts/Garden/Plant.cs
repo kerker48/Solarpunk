@@ -16,17 +16,47 @@ public enum GrowthStage
 /// </summary>
 public class Plant : MonoBehaviour
 {
-    [Header("Visuels de chaque étape (enfants du Prefab)")]
-    [Tooltip("Objet affiché pendant l'étape graine.")]
-    [SerializeField] private GameObject seedVisual;
+    [Header("Identité")]
+    [Tooltip("Nom affiché à l'écran quand on sélectionne cette plante.")]
+    [SerializeField] private string displayName = "Blé";
 
-    [Tooltip("Objet affiché quand le légume est mûr.")]
+    [Tooltip("Icône affichée à l'écran (optionnelle).")]
+    [SerializeField] private Sprite icon;
+
+    [Header("Place dans le potager")]
+    [Tooltip("Nombre maximum de plantes de ce type sur une même parcelle.")]
+    [SerializeField, Min(1)] private int maxPerPlot = 15;
+
+    [Tooltip("Distance minimale entre cette plante et ses voisines (en unités).")]
+    [SerializeField, Min(0.1f)] private float minSpacing = 0.9f;
+
+    /// <summary>Nombre maximum de plantes sur une parcelle (utilisé par SoilPlot).</summary>
+    public int MaxPerPlot => maxPerPlot;
+
+    /// <summary>Espace minimum autour de cette plante (utilisé par SeedPlanter).</summary>
+    public float MinSpacing => minSpacing;
+
+    /// <summary>Nom affiché dans l'interface.</summary>
+    public string DisplayName => displayName;
+
+    /// <summary>Icône affichée dans l'interface (peut être vide).</summary>
+    public Sprite Icon => icon;
+
+    /// <summary>Points rapportés à la récolte (affichés dans le sélecteur).</summary>
+    public int HarvestPoints => harvestPoints;
+
+    [Header("Visuels de chaque étape (enfants du Prefab)")]
+    [Tooltip("Visuels de la pousse, dans l'ordre (ex. Wheat_1, Wheat_2, Wheat_3). " +
+             "Ils s'affichent l'un après l'autre pendant l'étape graine : un seul visible à la fois.")]
+    [SerializeField] private GameObject[] growingVisuals;
+
+    [Tooltip("Objet affiché quand le légume est mûr (ex. Wheat_4).")]
     [SerializeField] private GameObject ripeVisual;
 
-    [Tooltip("Objet affiché quand le légume est trop mûr.")]
+    [Tooltip("Objet affiché quand le légume est trop mûr (ex. Wheat_4 avec un matériau fané).")]
     [SerializeField] private GameObject overripeVisual;
 
-    [Tooltip("Objet qui grossit avec le temps (le parent des 3 visuels).")]
+    [Tooltip("Objet qui peut grossir avec le temps (le parent des visuels). Optionnel.")]
     [SerializeField] private Transform growthRoot;
 
     [Header("Durées (en secondes)")]
@@ -43,14 +73,17 @@ public class Plant : MonoBehaviour
     [SerializeField, Range(0f, 0.5f)] private float durationVariation = 0.15f;
 
     [Header("Taille")]
-    [Tooltip("Taille à la plantation.")]
-    [SerializeField] private float startScale = 0.3f;
+    [Tooltip("Faire aussi grossir la plante en continu ? Décoché = seuls les changements de modèle montrent la pousse (plus réaliste avec des modèles par stade).")]
+    [SerializeField] private bool animateScale = false;
 
-    [Tooltip("Taille quand le légume devient mûr.")]
+    [Tooltip("Taille à la plantation (si Animate Scale est coché).")]
+    [SerializeField] private float startScale = 0.6f;
+
+    [Tooltip("Taille quand le légume devient mûr (si Animate Scale est coché).")]
     [SerializeField] private float ripeScale = 1f;
 
-    [Tooltip("Taille juste avant l'éclatement.")]
-    [SerializeField] private float overripeScale = 1.3f;
+    [Tooltip("Taille juste avant l'éclatement (si Animate Scale est coché).")]
+    [SerializeField] private float overripeScale = 1.1f;
 
     [Header("Récolte")]
     [Tooltip("Points gagnés quand on récolte ce légume mûr.")]
@@ -114,31 +147,39 @@ public class Plant : MonoBehaviour
     private IEnumerator Start()
     {
         float variation = Random.Range(1f - durationVariation, 1f + durationVariation);
+        float midScale = Mathf.Lerp(ripeScale, overripeScale, 0.5f);
 
         SetStage(GrowthStage.Seed);
-        yield return Grow(seedDuration * variation, startScale, ripeScale);
+        yield return Grow(seedDuration * variation, startScale, ripeScale, true);
 
         SetStage(GrowthStage.Ripe);
-        yield return Grow(ripeDuration * variation, ripeScale, Mathf.Lerp(ripeScale, overripeScale, 0.5f));
+        yield return Grow(ripeDuration * variation, ripeScale, midScale, false);
 
         SetStage(GrowthStage.Overripe);
-        yield return Grow(overripeDuration * variation, Mathf.Lerp(ripeScale, overripeScale, 0.5f), overripeScale);
+        yield return Grow(overripeDuration * variation, midScale, overripeScale, false);
 
         Burst();
     }
 
     /// <summary>
-    /// Attend 'duration' secondes de croissance en faisant grossir la plante de 'fromScale' à 'toScale'.
-    /// Le temps avance de Time.deltaTime × GrowthSpeed à chaque image : arroser = pousser plus vite.
+    /// Attend 'duration' secondes de croissance. Le temps avance de Time.deltaTime × GrowthSpeed
+    /// à chaque image : arroser = pousser plus vite.
+    /// Pendant l'étape graine, on passe d'un visuel de pousse au suivant selon l'avancement.
     /// </summary>
-    private IEnumerator Grow(float duration, float fromScale, float toScale)
+    private IEnumerator Grow(float duration, float fromScale, float toScale, bool showGrowingVisuals)
     {
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime * GrowthSpeed;
             float progress = Mathf.Clamp01(elapsed / duration);
-            if (growthRoot != null)
+
+            if (showGrowingVisuals)
+            {
+                ShowGrowingVisual(progress);
+            }
+
+            if (animateScale && growthRoot != null)
             {
                 growthRoot.localScale = Vector3.one * Mathf.Lerp(fromScale, toScale, progress);
             }
@@ -146,11 +187,35 @@ public class Plant : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Affiche UN seul visuel de pousse selon l'avancement (0 → premier, 1 → dernier).
+    /// Avec 3 visuels : 0–33 % = pousse 1, 33–66 % = pousse 2, 66–100 % = pousse 3.
+    /// </summary>
+    private void ShowGrowingVisual(float progress)
+    {
+        if (growingVisuals == null || growingVisuals.Length == 0) return;
+        int index = Mathf.Min((int)(progress * growingVisuals.Length), growingVisuals.Length - 1);
+        for (int i = 0; i < growingVisuals.Length; i++)
+        {
+            if (growingVisuals[i] != null) growingVisuals[i].SetActive(i == index);
+        }
+    }
+
     private void SetStage(GrowthStage newStage)
     {
         Stage = newStage;
+
+        // Pousse : on commence par le premier visuel ; sinon on les cache tous.
+        if (newStage == GrowthStage.Seed) ShowGrowingVisual(0f);
+        else if (growingVisuals != null)
+        {
+            foreach (GameObject visual in growingVisuals)
+            {
+                if (visual != null) visual.SetActive(false);
+            }
+        }
+
         // N'afficher que le visuel de l'étape actuelle.
-        if (seedVisual != null) seedVisual.SetActive(newStage == GrowthStage.Seed);
         if (ripeVisual != null) ripeVisual.SetActive(newStage == GrowthStage.Ripe);
         if (overripeVisual != null) overripeVisual.SetActive(newStage == GrowthStage.Overripe);
     }

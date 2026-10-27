@@ -4,15 +4,13 @@ using UnityEngine;
 /// <summary>
 /// Parcelle de terre cultivable.
 /// Responsabilité unique : savoir quelles plantes poussent sur cette parcelle
-/// et dire si on peut encore y planter (nombre maximum de plantes).
+/// et dire s'il reste de la place pour une plante donnée.
+/// La capacité dépend de la PLANTE (chaque Prefab de plante définit son maximum par parcelle).
 /// Le drone ne peut planter que sur un collider qui porte ce composant.
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class SoilPlot : MonoBehaviour
 {
-    [Tooltip("Nombre maximum de plantes en même temps sur cette parcelle.")]
-    [SerializeField, Min(1)] private int maxPlants = 4;
-
     // Les plantes actuellement sur la parcelle.
     private readonly List<Plant> plants = new List<Plant>();
 
@@ -26,8 +24,15 @@ public class SoilPlot : MonoBehaviour
         }
     }
 
-    /// <summary>Vrai s'il reste de la place sur la parcelle.</summary>
-    public bool HasRoom => PlantCount < maxPlants;
+    /// <summary>
+    /// Vrai s'il reste de la place pour planter ce type de plante.
+    /// Ex. : blé = 15 max par parcelle, tomate = 6 max.
+    /// </summary>
+    public bool HasRoomFor(Plant plantType)
+    {
+        if (plantType == null) return false;
+        return PlantCount < plantType.MaxPerPlot;
+    }
 
     /// <summary>Enregistre une plante qui vient d'être plantée ici.</summary>
     public void Register(Plant plant)
