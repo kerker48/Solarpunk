@@ -31,10 +31,10 @@ public class Plant : MonoBehaviour
 
     [Header("Durées (en secondes)")]
     [Tooltip("Temps pour passer de graine à légume mûr.")]
-    [SerializeField] private float seedDuration = 8f;
+    [SerializeField] private float seedDuration = 10f;
 
     [Tooltip("Temps pendant lequel le légume reste mûr (fenêtre de récolte).")]
-    [SerializeField] private float ripeDuration = 6f;
+    [SerializeField] private float ripeDuration = 7f;
 
     [Tooltip("Temps avant que le légume trop mûr éclate.")]
     [SerializeField] private float overripeDuration = 4f;
@@ -52,14 +52,36 @@ public class Plant : MonoBehaviour
     [Tooltip("Taille juste avant l'éclatement.")]
     [SerializeField] private float overripeScale = 1.3f;
 
+    [Header("Arrosage")]
+    [Tooltip("Bonus de croissance quand la plante est arrosée (2 = pousse 2× plus vite).")]
+    [SerializeField, Min(1f)] private float wateredGrowthMultiplier = 2.5f;
+
+    [Tooltip("Combien de secondes la terre reste humide après le dernier arrosage.")]
+    [SerializeField, Min(0f)] private float wetDuration = 2f;
+
     /// <summary>Étape actuelle (lecture seule de l'extérieur).</summary>
     public GrowthStage Stage { get; private set; }
 
     /// <summary>Vrai seulement quand le légume peut être récolté.</summary>
     public bool IsRipe => Stage == GrowthStage.Ripe;
 
-    // Multiplicateur de vitesse de croissance (1 = normal). L'arrosage l'augmentera (brique 2.3).
-    private float growthSpeed = 1f;
+    /// <summary>Vrai tant que la plante profite encore d'un arrosage récent.</summary>
+    public bool IsWet => Time.time < wetUntil;
+
+    // Moment (en secondes de jeu) jusqu'auquel la plante reste arrosée.
+    private float wetUntil = -1f;
+
+    // Vitesse de croissance actuelle : normale, ou accélérée si la plante est arrosée.
+    private float GrowthSpeed => IsWet ? wateredGrowthMultiplier : 1f;
+
+    /// <summary>
+    /// Appelée par le drone (WaterSprayer) à chaque image où la plante est sous le jet d'eau.
+    /// Prolonge la période « arrosée » de wetDuration secondes.
+    /// </summary>
+    public void Water()
+    {
+        wetUntil = Time.time + wetDuration;
+    }
 
     // Start peut être une coroutine : elle tourne en parallèle du jeu sans le bloquer.
     private IEnumerator Start()
@@ -80,14 +102,14 @@ public class Plant : MonoBehaviour
 
     /// <summary>
     /// Attend 'duration' secondes de croissance en faisant grossir la plante de 'fromScale' à 'toScale'.
-    /// Le temps avance de Time.deltaTime × growthSpeed à chaque image : arroser = pousser plus vite.
+    /// Le temps avance de Time.deltaTime × GrowthSpeed à chaque image : arroser = pousser plus vite.
     /// </summary>
     private IEnumerator Grow(float duration, float fromScale, float toScale)
     {
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime * growthSpeed;
+            elapsed += Time.deltaTime * GrowthSpeed;
             float progress = Mathf.Clamp01(elapsed / duration);
             if (growthRoot != null)
             {
