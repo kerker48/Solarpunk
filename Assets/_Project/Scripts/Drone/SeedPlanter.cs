@@ -17,6 +17,9 @@ public class SeedPlanter : MonoBehaviour
     [Tooltip("Sélecteur de plante : décide QUELLE plante planter. S'il est vide, on utilise Plant Prefab.")]
     [SerializeField] private PlantSelector plantSelector;
 
+    [Tooltip("Stock de graines du drone. S'il est vide (None), les graines sont illimitées.")]
+    [SerializeField] private DroneSeeds seeds;
+
     [Tooltip("Prefab utilisé si aucun sélecteur n'est assigné.")]
     [SerializeField] private Plant plantPrefab;
 
@@ -65,6 +68,12 @@ public class SeedPlanter : MonoBehaviour
             return;
         }
 
+        // 0. Reste-t-il une graine de ce légume ?
+        if (seeds != null && !seeds.HasSeed(prefabToPlant))
+        {
+            return; // plus de graines : il faut passer au bac à graines
+        }
+
         // 1. Lancer un rayon tout droit vers le BAS depuis le drone : la graine naîtra
         //    là où il touche le sol, donc exactement sous le drone (pas devant, pas à côté).
         //    QueryTriggerInteraction.Ignore : on ignore les zones invisibles (triggers) des plantes.
@@ -100,6 +109,7 @@ public class SeedPlanter : MonoBehaviour
 
         // 4. Faire naître la plante et la mémoriser.
         Plant newPlant = Instantiate(prefabToPlant, hit.point, Quaternion.identity, plantsParent);
+        if (seeds != null) seeds.TryConsume(prefabToPlant); // une graine utilisée
         newPlant.Initialize(scoreManager); // injection de dépendance : la plante sait à qui donner ses points
         plantedPlants.Add(newPlant);
         plot.Register(newPlant);

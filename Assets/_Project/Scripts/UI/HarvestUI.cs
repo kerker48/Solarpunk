@@ -23,6 +23,9 @@ public class HarvestUI : MonoBehaviour
     [Tooltip("Mise en forme du score total : {0} = score.")]
     [SerializeField] private string totalFormat = "<b>Score : {0}</b>";
 
+    [Tooltip("Afficher aussi le nombre de récoltes par plante sous le score ?")]
+    [SerializeField] private bool showHarvestLines = false;
+
     [Tooltip("Mise en forme d'une ligne : {0} = nom de la plante, {1} = quantité récoltée.")]
     [SerializeField] private string lineFormat = "<size=75%>{0} : {1}</size>";
 
@@ -45,7 +48,8 @@ public class HarvestUI : MonoBehaviour
 
     private void Refresh()
     {
-        if (harvestText == null || scoreManager == null || plantSelector == null) return;
+        if (harvestText == null || scoreManager == null) return;
+        if (showHarvestLines && plantSelector == null) return;
 
         // StringBuilder : construire un texte morceau par morceau sans créer plein de chaînes.
         StringBuilder builder = new StringBuilder();
@@ -53,7 +57,7 @@ public class HarvestUI : MonoBehaviour
         {
             builder.AppendLine(string.Format(totalFormat, scoreManager.Score));
         }
-        for (int i = 0; i < plantSelector.Count; i++)
+        for (int i = 0; showHarvestLines && i < plantSelector.Count; i++)
         {
             Plant plant = plantSelector.GetPlant(i);
             if (plant == null) continue;

@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
 /// Permet au drone d'arroser ce qui se trouve sous lui.
-/// Responsabilité unique : tant qu'on maintient « arroser », jouer le jet de particules
-/// et prévenir chaque plante située dans la zone d'eau sous le drone.
+/// Responsabilité unique : tant qu'on maintient « arroser » ET qu'il reste de l'eau,
+/// jouer le jet de particules, vider le réservoir et prévenir chaque plante sous le drone.
 /// </summary>
 public class WaterSprayer : MonoBehaviour
 {
@@ -23,7 +24,41 @@ public class WaterSprayer : MonoBehaviour
     [Tooltip("Profondeur de la zone arrosée sous le drone (doit atteindre le sol depuis la hauteur max).")]
     [SerializeField, Min(0.5f)] private float waterDepth = 12f;
 
+    [Header("Réservoir d'eau")]
+    [Tooltip("Quantité d'eau maximale du réservoir.")]
+    [SerializeField, Min(1f)] private float maxWater = 100f;
+
+    [Tooltip("Eau consommée par seconde pendant l'arrosage.")]
+    [SerializeField, Min(0f)] private float waterUsePerSecond = 20f;
+
     public bool IsWatering { get; private set; }
+
+    /// <summary>Eau restante.</summary>
+    public float CurrentWater { get; private set; }
+
+    /// <summary>Eau restante entre 0 (vide) et 1 (plein), pratique pour une jauge.</summary>
+    public float WaterRatio => CurrentWater / maxWater;
+
+    /// <summary>Déclenché quand le niveau d'eau change (valeur entre 0 et 1).</summary>
+    public event Action<float> WaterChanged;
+
+    private void Awake()
+    {
+        CurrentWater = maxWater; // on part avec le réservoir plein
+    }
+
+    private void Start()
+    {
+        WaterChanged?.Invoke(WaterRatio);
+    }
+
+    /// <summary>Remplit le réservoir (appelé par le DroneInteractor au-dessus du réservoir).</summary>
+    public void Refill(float amount)
+    {
+        if (amount <= 0f || CurrentWater >= maxWater) return;
+        CurrentWater = Mathf.Min(maxWater, CurrentWater + amount);
+        WaterChanged?.Invoke(WaterRatio);
+    }
 
     private void OnEnable()
     {
@@ -42,11 +77,14 @@ public class WaterSprayer : MonoBehaviour
 
         // IsPressed() : vrai à chaque image tant que le bouton est maintenu
         // (contrairement à 'performed', qui ne se déclenche qu'une fois à l'appui).
-        IsWatering = waterAction.action.IsPressed();
+        // On n'arrose que si le bouton est maintenu ET qu'il reste de l'eau.
+        IsWatering = waterAction.action.IsPressed() && CurrentWater > 0f;
         SetSprayVisible(IsWatering);
 
         if (IsWatering)
         {
+            CurrentWater = Mathf.Max(0f, CurrentWater - waterUsePerSecond * Time.deltaTime);
+            WaterChanged?.Invoke(WaterRatio);
             WaterPlantsBelow();
         }
     }

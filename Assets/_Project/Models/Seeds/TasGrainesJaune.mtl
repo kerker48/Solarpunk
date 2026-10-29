@@ -1,0 +1,24 @@
+newmtl TasGrainesJaune_base
+Kd 0.7882 0.6314 0.2431
+Ka 0 0 0
+Ks 0.05 0.05 0.05
+Ns 10
+d 1
+illum 2
+
+newmtl TasGrainesJaune_seed
+Kd 0.9490 0.7882 0.2980
+Ka 0 0 0
+Ks 0.05 0.05 0.05
+Ns 10
+d 1
+illum 2
+
+newmtl TasGrainesJaune_seeddark
+Kd 0.8510 0.6627 0.1961
+Ka 0 0 0
+Ks 0.05 0.05 0.05
+Ns 10
+d 1
+illum 2
+

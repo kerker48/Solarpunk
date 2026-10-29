@@ -1,0 +1,24 @@
+newmtl TasGrainesOrange_base
+Kd 0.7490 0.3922 0.1255
+Ka 0 0 0
+Ks 0.05 0.05 0.05
+Ns 10
+d 1
+illum 2
+
+newmtl TasGrainesOrange_seed
+Kd 0.9490 0.5490 0.1569
+Ka 0 0 0
+Ks 0.05 0.05 0.05
+Ns 10
+d 1
+illum 2
+
+newmtl TasGrainesOrange_seeddark
+Kd 0.8510 0.4314 0.1020
+Ka 0 0 0
+Ks 0.05 0.05 0.05
+Ns 10
+d 1
+illum 2
+

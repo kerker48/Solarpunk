@@ -30,6 +30,12 @@ public class Plant : MonoBehaviour
     [Tooltip("Distance minimale entre cette plante et ses voisines (en unités).")]
     [SerializeField, Min(0.1f)] private float minSpacing = 0.9f;
 
+    [Tooltip("Nombre maximum de graines de ce légume que le drone peut transporter.")]
+    [SerializeField, Min(1)] private int seedCapacity = 10;
+
+    /// <summary>Capacité du stock de graines du drone pour ce légume (utilisé par DroneSeeds).</summary>
+    public int SeedCapacity => seedCapacity;
+
     /// <summary>Nombre maximum de plantes sur une parcelle (utilisé par SoilPlot).</summary>
     public int MaxPerPlot => maxPerPlot;
 
@@ -228,6 +234,11 @@ public class Plant : MonoBehaviour
         if (isHarvested || !IsRipe) return;                     // seul un légume mûr se récolte
         DroneController drone = other.GetComponentInParent<DroneController>();
         if (drone == null) return;                              // ce n'est pas le drone
+
+        // Le drone a-t-il une soute ? Si oui, elle doit avoir de la place.
+        DroneCargo cargo = drone.GetComponent<DroneCargo>();
+        if (cargo != null && !cargo.TryAdd(displayName)) return; // soute pleine : on ne récolte pas
+
         Harvest(drone.transform);
     }
 
