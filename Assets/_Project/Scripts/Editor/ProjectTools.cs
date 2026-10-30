@@ -112,5 +112,90 @@ public static class ProjectTools
         EditorUtility.DisplayDialog("Build réussie", $"Jeu : {BuildFolder}\nZip pour itch.io : {ZipPath} ({mb} Mo)", "OK");
         EditorUtility.RevealInFinder(zip);
     }
+    // ---------------------------------------------------------------- Tas de récolte
+    [MenuItem("Solarpunk/Mettre les tas de récolte dans les charrettes")]
+    public static void ReplaceHarvestPiles()
+    {
+        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+        Scene scene = EditorSceneManager.OpenScene(GameScenePath);
+
+        int done = ReplacePile("BacBle", "Assets/_Project/Models/Recoltes/TasBle.obj")
+                 + ReplacePile("BacCarotte", "Assets/_Project/Models/Recoltes/TasCarottes.obj");
+
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+        EditorUtility.DisplayDialog("Tas de récolte", $"{done} charrette(s) garnie(s).", "OK");
+    }
+
+    private static int ReplacePile(string binName, string modelPath)
+    {
+        GameObject bin = GameObject.Find(binName);
+        GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+        if (bin == null || model == null) { Debug.LogError($"[Tas] {binName} ou {modelPath} introuvable."); return 0; }
+
+        Transform old = bin.transform.Find("TasRecolte");
+        Transform cart = bin.transform.Find("Charrette");
+        Bounds cartBounds = RenderBounds(cart != null ? cart : bin.transform);
+        Bounds oldBounds = old != null ? RenderBounds(old) : cartBounds;
+
+        GameObject pile = (GameObject)PrefabUtility.InstantiatePrefab(model, bin.scene);
+        pile.name = "TasRecolte";
+        Transform parent = old != null ? old.parent : bin.transform;
+        pile.transform.SetParent(parent, false);
+
+        // Orientation : suit la charrette (rotation autour de Y seulement).
+        float yaw = cart != null ? cart.eulerAngles.y : bin.transform.eulerAngles.y;
+        pile.transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+
+        // Taille : le tas occupe environ 60 % de la largeur de la charrette.
+        pile.transform.localScale = Vector3.one;
+        Bounds pileBounds = RenderBounds(pile.transform);
+        float footprint = Mathf.Max(pileBounds.size.x, pileBounds.size.z);
+        float target = 0.6f * Mathf.Min(cartBounds.size.x, cartBounds.size.z);
+        float s = footprint > 0f ? target / footprint : 1f;
+        Vector3 ps = parent.lossyScale;
+        pile.transform.localScale = new Vector3(s / ps.x, s / ps.y, s / ps.z);
+
+        // Position : posé là où était l'ancien légume (au fond de la charrette).
+        pileBounds = RenderBounds(pile.transform);
+        Vector3 wanted = new Vector3(oldBounds.center.x, oldBounds.min.y, oldBounds.center.z);
+        Vector3 current = new Vector3(pileBounds.center.x, pileBounds.min.y, pileBounds.center.z);
+        pile.transform.position += wanted - current;
+
+        if (old != null)
+        {
+            RedirectReferences(old.gameObject, pile);
+            Object.DestroyImmediate(old.gameObject);
+        }
+        return 1;
+    }
+
+    private static Bounds RenderBounds(Transform root)
+    {
+        Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
+        if (renderers.Length == 0) return new Bounds(root.position, Vector3.zero);
+        Bounds b = renderers[0].bounds;
+        foreach (Renderer r in renderers) b.Encapsulate(r.bounds);
+        return b;
+    }
+
+    // Si un script pointait vers l'ancien modèle, il pointe maintenant vers le nouveau tas.
+    private static void RedirectReferences(GameObject oldGo, GameObject newGo)
+    {
+        foreach (MonoBehaviour mb in Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (mb == null) continue;
+            SerializedObject so = new SerializedObject(mb);
+            SerializedProperty it = so.GetIterator();
+            bool changed = false;
+            while (it.Next(true))
+            {
+                if (it.propertyType != SerializedPropertyType.ObjectReference) continue;
+                if (it.objectReferenceValue == oldGo) { it.objectReferenceValue = newGo; changed = true; }
+                else if (it.objectReferenceValue == oldGo.transform) { it.objectReferenceValue = newGo.transform; changed = true; }
+            }
+            if (changed) so.ApplyModifiedPropertiesWithoutUndo();
+        }
+    }
 }
 #endif
