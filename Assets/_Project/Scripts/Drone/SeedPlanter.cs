@@ -29,6 +29,13 @@ public class SeedPlanter : MonoBehaviour
     [Tooltip("Le ScoreManager de la scène : il sera transmis à chaque plante à sa naissance.")]
     [SerializeField] private ScoreManager scoreManager;
 
+    [Header("Son")]
+    [Tooltip("Le SoundPlayer de la scène : joue les sons et sera transmis à chaque plante.")]
+    [SerializeField] private SoundPlayer soundPlayer;
+
+    [Tooltip("Son joué à chaque plantation.")]
+    [SerializeField] private AudioClip plantSound;
+
     [Tooltip("Objet de la Hierarchy qui servira de parent aux plantes (pour garder la Hierarchy rangée). Optionnel.")]
     [SerializeField] private Transform plantsParent;
 
@@ -110,7 +117,8 @@ public class SeedPlanter : MonoBehaviour
         // 4. Faire naître la plante et la mémoriser.
         Plant newPlant = Instantiate(prefabToPlant, hit.point, Quaternion.identity, plantsParent);
         if (seeds != null) seeds.TryConsume(prefabToPlant); // une graine utilisée
-        newPlant.Initialize(scoreManager); // injection de dépendance : la plante sait à qui donner ses points
+        newPlant.Initialize(scoreManager, soundPlayer);
+        if (soundPlayer != null) soundPlayer.Play(plantSound); // injection de dépendance : la plante sait à qui donner ses points
         plantedPlants.Add(newPlant);
         plot.Register(newPlant);
     }

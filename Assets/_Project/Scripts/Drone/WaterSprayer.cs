@@ -17,6 +17,10 @@ public class WaterSprayer : MonoBehaviour
     [Tooltip("Système de particules du jet d'eau (enfant du drone, orienté vers le bas).")]
     [SerializeField] private ParticleSystem waterParticles;
 
+    [Header("Son")]
+    [Tooltip("AudioSource en boucle (Loop coché) avec le son d'eau : joué pendant l'arrosage.")]
+    [SerializeField] private AudioSource waterLoopSource;
+
     [Header("Zone arrosée")]
     [Tooltip("Rayon de la zone arrosée sous le drone (en unités).")]
     [SerializeField, Min(0.1f)] private float waterRadius = 1f;
@@ -109,9 +113,16 @@ public class WaterSprayer : MonoBehaviour
 
     private void SetSprayVisible(bool visible)
     {
-        if (waterParticles == null) return;
-        if (visible && !waterParticles.isPlaying) waterParticles.Play();
-        else if (!visible && waterParticles.isPlaying) waterParticles.Stop();
+        if (waterParticles != null)
+        {
+            if (visible && !waterParticles.isPlaying) waterParticles.Play();
+            else if (!visible && waterParticles.isPlaying) waterParticles.Stop();
+        }
+        if (waterLoopSource != null)
+        {
+            if (visible && !waterLoopSource.isPlaying) waterLoopSource.Play();
+            else if (!visible && waterLoopSource.isPlaying) waterLoopSource.Stop();
+        }
     }
 
     // Affiche la zone arrosée dans la vue Scene quand le drone est sélectionné.

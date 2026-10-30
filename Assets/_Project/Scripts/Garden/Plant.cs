@@ -102,6 +102,22 @@ public class Plant : MonoBehaviour
     [Tooltip("Vitesse de rotation du légume pendant qu'il est aspiré (degrés par seconde).")]
     [SerializeField] private float suctionSpinSpeed = 720f;
 
+    [Header("Sons et particules")]
+    [Tooltip("Son joué à la récolte.")]
+    [SerializeField] private AudioClip harvestSound;
+
+    [Tooltip("Son joué quand le légume trop mûr éclate.")]
+    [SerializeField] private AudioClip burstSound;
+
+    [Tooltip("Particules de récolte (Prefab), créées sur le légume.")]
+    [SerializeField] private GameObject harvestVfx;
+
+    [Tooltip("Particules d'éclatement (Prefab), créées sur le légume.")]
+    [SerializeField] private GameObject burstVfx;
+
+    [Tooltip("Durée de vie des particules créées avant leur destruction (secondes).")]
+    [SerializeField, Min(0.1f)] private float vfxLifetime = 2f;
+
     [Header("Arrosage")]
     [Tooltip("Bonus de croissance quand la plante est arrosée (2 = pousse 2× plus vite).")]
     [SerializeField, Min(1f)] private float wateredGrowthMultiplier = 2.5f;
@@ -126,12 +142,28 @@ public class Plant : MonoBehaviour
     // Empêche une double récolte si plusieurs détections arrivent dans la même image.
     private bool isHarvested;
 
+    // Qui joue les sons ? Injecté de la même façon que le ScoreManager.
+    private SoundPlayer soundPlayer;
+
     /// <summary>
-    /// Appelée par SeedPlanter juste après Instantiate : on « injecte » le ScoreManager.
+    /// Appelée par SeedPlanter juste après Instantiate : on « injecte » les objets de la scène
+    /// dont la plante a besoin (ScoreManager pour les points, SoundPlayer pour les sons).
     /// </summary>
-    public void Initialize(ScoreManager scoreManager)
+    public void Initialize(ScoreManager scoreManager, SoundPlayer soundPlayer = null)
     {
         this.scoreManager = scoreManager;
+        this.soundPlayer = soundPlayer;
+    }
+
+    /// <summary>Joue un son et crée des particules à l'endroit de la plante.</summary>
+    private void PlayFeedback(AudioClip clip, GameObject vfxPrefab)
+    {
+        if (soundPlayer != null) soundPlayer.Play(clip);
+        if (vfxPrefab != null)
+        {
+            GameObject vfx = Instantiate(vfxPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
+            Destroy(vfx, vfxLifetime); // les particules disparaissent aussi de la Hierarchy
+        }
     }
 
     // Moment (en secondes de jeu) jusqu'auquel la plante reste arrosée.
@@ -253,6 +285,8 @@ public class Plant : MonoBehaviour
             scoreManager.RecordHarvest(displayName, harvestPoints);
         }
 
+        PlayFeedback(harvestSound, harvestVfx); // son + particules, sur le légume
+
         // Arrêter la croissance (sinon la plante pourrait encore changer d'étape ou éclater),
         // puis lancer l'aspiration.
         StopAllCoroutines();
@@ -285,13 +319,12 @@ public class Plant : MonoBehaviour
             yield return null;
         }
 
-        // Plus tard (jalon 4) : son + particules de récolte ici.
         Destroy(gameObject); // disparaît de la scène ET de la Hierarchy
     }
 
     private void Burst()
     {
-        // Plus tard (jalon 4) : son + particules d'éclatement ici.
+        PlayFeedback(burstSound, burstVfx); // son + particules d'éclatement
         Destroy(gameObject); // disparaît de la scène ET de la Hierarchy
     }
 }

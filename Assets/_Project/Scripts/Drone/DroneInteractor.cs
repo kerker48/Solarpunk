@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Gère les interactions du drone avec les bacs de dépôt, le réservoir d'eau et les bacs à graines.
@@ -71,6 +72,14 @@ public class DroneInteractor : MonoBehaviour
         if (seedBin != null && seedBin == seedBinBelow) seedBinBelow = null;
     }
 
+    [Header("Son")]
+    [Tooltip("AudioSource en boucle (Loop coché) joué pendant la recharge d'EAU. Optionnel.")]
+    [FormerlySerializedAs("refillLoopSource")] // garde le réglage déjà fait dans l'Inspector
+    [SerializeField] private AudioSource waterRefillLoopSource;
+
+    [Tooltip("AudioSource en boucle (Loop coché) joué pendant la recharge de GRAINES. Optionnel.")]
+    [SerializeField] private AudioSource seedRefillLoopSource;
+
     [Header("Détection de secours")]
     [Tooltip("Rayon de la colonne de recherche sous le drone (utilisée si les triggers n'ont rien détecté).")]
     [SerializeField, Min(0.1f)] private float searchRadius = 1f;
@@ -109,19 +118,37 @@ public class DroneInteractor : MonoBehaviour
     // R MAINTENU au-dessus du réservoir ou d'un bac à graines : remplissage petit à petit.
     private void Update()
     {
-        if (releaseAction == null || !releaseAction.action.IsPressed()) return;
+        bool refillingWater = false;
+        bool refillingSeeds = false;
 
-        WaterRefillStation station = FindStation();
-        if (station != null && waterSprayer != null)
+        if (releaseAction != null && releaseAction.action.IsPressed())
         {
-            waterSprayer.Refill(station.RefillPerSecond * Time.deltaTime);
+            WaterRefillStation station = FindStation();
+            if (station != null && waterSprayer != null)
+            {
+                waterSprayer.Refill(station.RefillPerSecond * Time.deltaTime);
+                refillingWater = true;
+            }
+
+            SeedBin seedBin = FindSeedBin();
+            if (seedBin != null && seeds != null)
+            {
+                seeds.Refill(seedBin.SeedPlant, seedBin.SeedsPerSecond * Time.deltaTime);
+                refillingSeeds = true;
+            }
         }
 
-        SeedBin seedBin = FindSeedBin();
-        if (seedBin != null && seeds != null)
-        {
-            seeds.Refill(seedBin.SeedPlant, seedBin.SeedsPerSecond * Time.deltaTime);
-        }
+        // Sons de recharge : chacun n'est joué que pendant sa recharge.
+        SetLoop(waterRefillLoopSource, refillingWater);
+        SetLoop(seedRefillLoopSource, refillingSeeds);
+    }
+
+    /// <summary>Démarre ou arrête un son en boucle selon 'playing'.</summary>
+    private static void SetLoop(AudioSource source, bool playing)
+    {
+        if (source == null) return;
+        if (playing && !source.isPlaying) source.Play();
+        else if (!playing && source.isPlaying) source.Stop();
     }
 
     private SeedBin FindSeedBin()

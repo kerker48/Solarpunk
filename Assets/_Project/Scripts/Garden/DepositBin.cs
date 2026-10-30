@@ -20,6 +20,13 @@ public class DepositBin : MonoBehaviour
     [Tooltip("Le ScoreManager de la scène (pour donner le bonus).")]
     [SerializeField] private ScoreManager scoreManager;
 
+    [Header("Son")]
+    [Tooltip("Le SoundPlayer de la scène.")]
+    [SerializeField] private SoundPlayer soundPlayer;
+
+    [Tooltip("Son joué à chaque légume qui tombe dans le bac.")]
+    [SerializeField] private AudioClip depositSound;
+
     [Header("Animation de dépôt")]
     [Tooltip("Modèle qui « tombe » du drone dans le bac pour chaque légume (ex. Wheat_Crop). Optionnel.")]
     [SerializeField] private GameObject flyingItemModel;
@@ -108,12 +115,12 @@ public class DepositBin : MonoBehaviour
 
         Destroy(item);
         StartCoroutine(Bounce());
-        // Plus tard (jalon 4) : son de dépôt ici.
     }
 
     /// <summary>Petit rebond du visuel du bac : il gonfle puis revient à sa taille.</summary>
     private IEnumerator Bounce()
     {
+        if (soundPlayer != null) soundPlayer.Play(depositSound, 0.8f); // un « toc » par légume
         if (binVisual == null) yield break;
         const float duration = 0.2f;
         float elapsed = 0f;

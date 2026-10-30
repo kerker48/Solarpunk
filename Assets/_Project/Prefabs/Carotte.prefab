@@ -57,13 +57,13 @@ PrefabInstance:
       value: Carotte
       objectReference: {fileID: 0}
     - target: {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
+      propertyPath: harvestPoints
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
       propertyPath: maxPerPlot
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
-      propertyPath: ripeVisual
-      value: 
-      objectReference: {fileID: 4063883361955263437}
     - target: {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
       propertyPath: displayName
       value: Carotte
@@ -76,10 +76,6 @@ PrefabInstance:
       propertyPath: seedDuration
       value: 15
       objectReference: {fileID: 0}
-    - target: {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
-      propertyPath: overripeVisual
-      value: 
-      objectReference: {fileID: 1210672620555280913}
     - target: {fileID: 2437486012704596018, guid: d532d16661bf66e499f8f5337ddfe2c6, type: 3}
       propertyPath: overripeDuration
       value: 6
