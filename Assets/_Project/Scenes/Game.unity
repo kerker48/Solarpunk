@@ -5951,7 +5951,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bf6886da3f4ec314190a17bc724290bd, type: 3}
       propertyPath: m_Name
-      value: chimney-top (1)
+      value: Silo
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7328,7 +7328,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 857c6d9ba20376042b294b2b72ca68b2, type: 3}
       propertyPath: m_Name
-      value: fountain-round
+      value: Fontaine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -18298,7 +18298,7 @@ GameObject:
   - component: {fileID: 958481856}
   - component: {fileID: 958481855}
   m_Layer: 5
-  m_Name: TitreReprendre
+  m_Name: TexteSon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23891,7 +23891,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: efdd3f8e343468c4aa474d16a05b8691, type: 3}
       propertyPath: m_Name
-      value: Wheat_Crop
+      value: TasRecolte
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -29525,7 +29525,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6235557a699edff4d8ebfc9ae3f7669e, type: 3}
       propertyPath: m_Name
-      value: cart
+      value: Charrette
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -30745,7 +30745,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bf6886da3f4ec314190a17bc724290bd, type: 3}
       propertyPath: m_Name
-      value: chimney-top
+      value: Silo
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -30767,7 +30767,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1479967402}
   m_Layer: 0
-  m_Name: Parcelle(1)
+  m_Name: Parcelle1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30985,7 +30985,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1539236144}
   m_Layer: 0
-  m_Name: Parcelle (3)
+  m_Name: Parcelle3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31531,7 +31531,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1620425696}
   m_Layer: 0
-  m_Name: Parcelle (4)
+  m_Name: Parcelle4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31846,7 +31846,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7d0d4f5789d8bc54b8365d740cd0816b, type: 3}
       propertyPath: m_Name
-      value: Carrot_Crop
+      value: TasRecolte
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -31945,7 +31945,7 @@ GameObject:
   - component: {fileID: 1799680853}
   - component: {fileID: 1799680852}
   m_Layer: 5
-  m_Name: TitreReprendre
+  m_Name: TexteRetour
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33116,7 +33116,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6235557a699edff4d8ebfc9ae3f7669e, type: 3}
       propertyPath: m_Name
-      value: cart
+      value: Charrette
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -33481,7 +33481,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2013015804}
   m_Layer: 0
-  m_Name: Parcelle (2)
+  m_Name: Parcelle2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
