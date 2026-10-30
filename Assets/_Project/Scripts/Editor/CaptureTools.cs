@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
@@ -26,21 +27,18 @@ public static class CaptureTools
     [MenuItem("Solarpunk/Captures/Vues de la scène")]
     public static void CaptureSceneViews()
     {
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Game")
+        {
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            EditorSceneManager.OpenScene("Assets/_Project/Scenes/Game.unity");
+        }
         Camera main = Camera.main;
         if (main == null) { EditorUtility.DisplayDialog("Captures", "Pas de Main Camera dans la scène ouverte.", "OK"); return; }
-
-        Bounds world = DecorBounds();
-        Vector3 center = world.center;
-        float radius = world.extents.magnitude;
-
-        // 1. Vue d'ensemble de 3/4, en hauteur.
-        Vector3 dir1 = new Vector3(-0.8f, 0.75f, -1f).normalized;
-        Shoot(main, center + dir1 * radius * 1.35f, center, 40f, "VueEnsemble.png");
 
         // 2. Vue plus proche du potager et du drone.
         GameObject drone = GameObject.Find("Drone");
         GameObject garden = GameObject.Find("Jardin");
-        Vector3 focus = garden != null ? BoundsOf(garden).center : center;
+        Vector3 focus = garden != null ? BoundsOf(garden).center : DecorBounds().center;
         if (drone != null) focus = Vector3.Lerp(focus, drone.transform.position, 0.4f);
         Vector3 dir2 = new Vector3(0.9f, 0.6f, -1f).normalized;
         Shoot(main, focus + dir2 * 11f, focus, 45f, "VuePotager.png");
@@ -49,12 +47,16 @@ public static class CaptureTools
         Vector3 dir3 = new Vector3(-1f, 0.25f, 0.6f).normalized;
         Shoot(main, focus + dir3 * 13f + Vector3.up * 1.5f, focus + Vector3.up * 1f, 50f, "VueSol.png");
 
-        EditorUtility.RevealInFinder(Path.Combine(Folder, "VueEnsemble.png"));
+        // 4. Vue large depuis l'autre côté (les grands arbres bordent la carte : on reste à l'intérieur).
+        Vector3 dir4 = new Vector3(-0.9f, 0.7f, -1f).normalized;
+        Shoot(main, focus + dir4 * 16f, focus, 55f, "VueEnsemble.png");
+
         Debug.Log("[Captures] Vues enregistrées dans " + Folder);
+        EditorUtility.DisplayDialog("Captures", "Vues enregistrées dans le dossier Captures du projet.", "OK");
     }
 
     // ---------------------------------------------------------------- Capture en jeu (Play)
-    [MenuItem("Solarpunk/Captures/Capture du jeu (en Play)")]
+    [MenuItem("Solarpunk/Captures/Capture du jeu (en Play) _F9")]
     public static void CaptureGameView()
     {
         if (!Application.isPlaying)
